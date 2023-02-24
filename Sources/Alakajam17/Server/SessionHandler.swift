@@ -61,7 +61,7 @@ final class SessionHandler: ChannelInboundHandler {
         =                                                                              =
         ================================================================================
         
-        Current date/time: \(Date.now)
+        Current date/time: \(Date())
         
         <WARNING>WARNING: Turbine pressure rising</WARNING>
         """

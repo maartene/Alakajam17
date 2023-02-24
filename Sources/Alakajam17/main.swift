@@ -21,7 +21,7 @@ let bootstrap = ServerBootstrap(group: group)
     .serverChannelOption(ChannelOptions.socket(SocketOptionLevel(IPPROTO_TCP), TCP_NODELAY), value: 1)
 
 let host = ProcessInfo.processInfo.environment["ALAKAJAM17_HOSTNAME"] ?? "::1"
-let port = Int(ProcessInfo.processInfo.environment["ALAKAJAM17_PORT"] ?? "1717") ?? 1717
+let port = Int(ProcessInfo.processInfo.environment["ALAKAJAM17_PORT"] ?? "2222") ?? 2222
 
 let channel = try bootstrap.bind(host: host, port: port).wait()
 
