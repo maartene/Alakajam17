@@ -46,24 +46,24 @@ final class ParseHandler: ChannelInboundHandler {
            response  = await createUser(session: updatedSession, username: username, password: password)
         case .login(let username, let password):
             response = await login(session: updatedSession, username: username, password: password)
-        case .look:
-            response = await look(session: updatedSession)
-        case .go(let direction):
-            response = await go(session: updatedSession, direction: direction)
-        case .say(let sentence):
-            response = await sayMessage(session: updatedSession, sentence: sentence)
-        case .whisper(let targetUserName, let message):
-            response = await whisperMessage(to: targetUserName, message: message, session: updatedSession)
-        case .open(let direction):
-            response = await open(direction: direction, session: updatedSession)
-            
+//        case .look:
+//            response = await look(session: updatedSession)
+//        case .go(let direction):
+//            response = await go(session: updatedSession, direction: direction)
+//        case .say(let sentence):
+//            response = await sayMessage(session: updatedSession, sentence: sentence)
+//        case .whisper(let targetUserName, let message):
+//            response = await whisperMessage(to: targetUserName, message: message, session: updatedSession)
+//        case .open(let direction):
+//            response = await open(direction: direction, session: updatedSession)
+//
         case .illegal:
             response = [MudResponse(session: updatedSession, message: "This is not a well formed sentence.")]
         case .empty:
             response = [MudResponse(session: updatedSession, message: "\n")]
             
-//        default:
-//            response = [MudResponse(session: updatedSession, message: "Command not implemented yet.")]
+        default:
+            response = [MudResponse(session: updatedSession, message: "Command not implemented yet.")]
         }
         
         return response
