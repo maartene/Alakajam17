@@ -13,12 +13,12 @@ struct User: DBType {
     let id: UUID
     let username: String
     let hashedPassword: String
-    var currentRoomID: UUID?
+    var turbine: Turbine
     
-    init(id: UUID? = nil, username: String, password: String, currentRoomID: UUID? = nil) {
+    init(id: UUID? = nil, username: String, password: String) {
         self.id = id ?? UUID()
         self.username = username
-        self.currentRoomID = currentRoomID
+        self.turbine = Turbine()
         
         self.hashedPassword = Hasher.hash(password + username.uppercased())
     }
@@ -28,7 +28,7 @@ struct User: DBType {
             throw UserError.usernameAlreadyTaken
         }
                 
-        let player = User(id: UUID(), username: username, password: password, currentRoomID: currentRoomID)
+        let player = User(id: UUID(), username: username, password: password)
         await player.save()
         return player
     }

@@ -15,11 +15,10 @@ enum Verb {
     case close
     case createUser(username: String, password: String)
     case login(username: String, password: String)
-    case look
-    case go(direction: Direction)
-    case say(sentence: String)
-    case whisper(targetUserName: String, message: String)
-    case open(direction: Direction)
+    case status
+    case setWaterflow(flowControl: Turbine.WaterFlowControlState)
+    case setPoweroutput(outsidePowerOpened: Bool)
+    case wait
     
     var requiredLogin: Bool {
         switch self {
@@ -41,13 +40,9 @@ enum Verb {
             return 3
         case "LOGIN":
             return 3
-        case "GO":
+        case "SET_WATERFLOW":
             return 2
-        case "SAY":
-            return 2
-        case "WHISPER":
-            return 3
-        case "OPEN":
+        case "SET_POWEROUTPUT":
             return 2
         default:
             return 1
@@ -74,24 +69,25 @@ enum Verb {
             return .createUser(username: String(parts[1]), password: String(parts[2]))
         case "LOGIN":
             return .login(username: String(parts[1]), password: String(parts[2]))
-        case "LOOK":
-            return .look
-        case "GO":
-            let direction = Direction(stringValue: String(parts[1]))
-            guard let direction = direction else {
+        case "STATUS":
+            return .status
+        case "SET_WATERFLOW":
+            if let intendedFlowControlString = Turbine.WaterFlowControlState.getWaterFlowControlState(from: String(parts[1])) {
+                return .setWaterflow(flowControl: intendedFlowControlString)
+            } else {
                 return .illegal
             }
-            return .go(direction: direction)
-        case "SAY":
-            return .say(sentence: parts.dropFirst().joined(separator: " "))
-        case "WHISPER":
-            return .whisper(targetUserName: String(parts[1]), message: parts.dropFirst(2).joined(separator: " "))
-        case "OPEN":
-            let direction = Direction(stringValue: String(parts[1]))
-            guard let direction else {
+        case "SET_POWEROUTPUT":
+            switch String(parts[1].uppercased().trimmingCharacters(in: .whitespacesAndNewlines)) {
+            case "ENABLED":
+                return .setPoweroutput(outsidePowerOpened: true)
+            case "DISABLED":
+                return .setPoweroutput(outsidePowerOpened: false)
+            default:
                 return .illegal
             }
-            return .open(direction: direction)
+        case "WAIT":
+            return .wait
         default:
             return .illegal
         }

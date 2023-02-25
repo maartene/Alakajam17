@@ -61,9 +61,6 @@ final class SessionHandler: ChannelInboundHandler {
         =                                                                              =
         ================================================================================
         
-        Current date/time: \(Date())
-        
-        <WARNING>WARNING: Turbine pressure rising</WARNING>
         """
         
         let ansiWelcomeText = AnsiFormatter.main.format(welcomeText) + "\n> "
