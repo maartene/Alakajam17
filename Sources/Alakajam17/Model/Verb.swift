@@ -19,6 +19,8 @@ enum Verb {
     case setWaterflow(flowControl: Turbine.WaterFlowControlState)
     case setPoweroutput(outsidePowerOpened: Bool)
     case wait
+    case help
+    case reset
     
     var requiredLogin: Bool {
         switch self {
@@ -27,6 +29,8 @@ enum Verb {
         case .createUser:
             return false
         case .login:
+            return false
+        case .help:
             return false
         default:
             return true
@@ -88,6 +92,10 @@ enum Verb {
             }
         case "WAIT":
             return .wait
+        case "HELP":
+            return .help
+        case "RESET":
+            return .reset
         default:
             return .illegal
         }

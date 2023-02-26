@@ -66,6 +66,10 @@ final class ParseHandler: ChannelInboundHandler {
             response = await setPoweroutput(outsidePowerOpened: outsidePowerOpened, session: updatedSession)
         case .wait:
             response = await wait(session: updatedSession)
+        case .reset:
+            response = await reset(session: updatedSession)
+        case.help:
+            response = await help(session: updatedSession)
             
         case .illegal:
             response = [MudResponse(session: updatedSession, message: "This is not a well formed sentence.")]
@@ -75,7 +79,10 @@ final class ParseHandler: ChannelInboundHandler {
         default:
             response = [MudResponse(session: updatedSession, message: "Command not implemented yet.")]
         }
-        
+                
         return response
     }
 }
+
+extension ChannelHandlerContext: @unchecked Sendable { }
+extension NIOAny: @unchecked Sendable { }

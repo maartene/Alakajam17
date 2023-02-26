@@ -18,7 +18,7 @@ struct AnsiFormatter: Formatter {
     
     typealias Output = String
     
-    var resetToCode = ""
+    var resetToCode = "\u{1B}[34m"
     
     func format(_ input: String) -> String {
         // output text is green by default
@@ -38,6 +38,12 @@ struct AnsiFormatter: Formatter {
         
         output = output.replacingOccurrences(of: "<ERROR>", with: "\u{1B}[31m")
         output = output.replacingOccurrences(of: "</ERROR>", with: "\u{1B}[0m" + resetToCode)
+        
+        output = output.replacingOccurrences(of: "<OK>", with: "\u{1B}[32m")
+        output = output.replacingOccurrences(of: "</OK>", with: "\u{1B}[0m" + resetToCode)
+        
+        output = output.replacingOccurrences(of: "<INFO>", with: "\u{1B}[34m")
+        output = output.replacingOccurrences(of: "</INFO>", with: "\u{1B}[0m" + resetToCode)
         
         return output
     }

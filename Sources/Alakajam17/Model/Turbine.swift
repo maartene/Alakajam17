@@ -8,6 +8,13 @@
 import Foundation
 
 struct Turbine: Codable {
+    enum GameState: Codable {
+        case running
+        case tooLongWithoutPower
+        case villageFlood
+        case villageSaved
+    }
+    
     enum WaterFlowControlState: String, Codable {
         case closed = "Closed"
         case halfOpened = "Half opened"
@@ -33,6 +40,23 @@ struct Turbine: Codable {
     var flowControl = WaterFlowControlState.halfOpened
     var waterPressure = 0.5
     var batteryCharge = 0.2
+    var timeWithoutPower = 0
+    
+    var gameState: GameState {
+        if timeWithoutPower >= 10 {
+            return .tooLongWithoutPower
+        }
+        
+        if waterPressure > 1.0 {
+            return .villageFlood
+        }
+        
+        if outsidePowerOpened && flowControl == .fullyOpened {
+            return .villageSaved
+        }
+        
+        return .running
+    }
     
     var waterPressureDescription: String {
         switch waterPressure {
@@ -45,12 +69,23 @@ struct Turbine: Codable {
         }
     }
     
+    var withoutPowerWarning: String {
+        switch timeWithoutPower {
+        case 5...7:
+            return "<WARNING>Colonists are annoyed by the lack of power.</WARNING>\n"
+        case 8...9:
+            return "<ERROR>Colonists are threatening to leave because of lack of power.</ERROR>\n"
+        default:
+            return ""
+        }
+    }
+    
     var status: String {
         """
         Current date/time: \(Date())
         
         Flow control: \(flowControl.rawValue)
-        Power delivery: \(outsidePowerOpened ? "Enabled" : "Disabled")
+        Power delivery: \(outsidePowerOpened ? "Enabled" : "Disabled (Colony without power: \(timeWithoutPower))")
         Water pressure: \(waterPressure)
         Battery charge: \(batteryCharge * 100.0)%
         """
@@ -59,7 +94,7 @@ struct Turbine: Codable {
     var warnings: String {
         let powerDeliveryWarning = outsidePowerOpened ? "" : "<WARNING>Power delivery cut</WARNING>\n"
         let waterPressureWarning = waterPressureDescription
-        let batteryChargeWarning = batteryCharge <= 0.2 ? "<WARNING>Battery power low</WARNING\n" : ""
+        let batteryChargeWarning = batteryCharge <= 0.2 ? "<WARNING>Battery power low</WARNING>\n" : ""
         
         if powerDeliveryWarning == "" && waterPressureWarning == "" && batteryChargeWarning == "" {
             return ""
@@ -67,13 +102,17 @@ struct Turbine: Codable {
             return """
             <WARNING>WARNINGS</WARNING>
             ================================================================================
-            \(powerDeliveryWarning + waterPressureWarning + batteryChargeWarning)
+            \(powerDeliveryWarning + waterPressureWarning + batteryChargeWarning + withoutPowerWarning)
             """
         }
     }
     
     func update() -> Turbine {
         var updatedTurbine = self
+        
+        guard gameState == .running else {
+            return self
+        }
         
         updatedTurbine.updateWaterPressure()
         updatedTurbine.updateBatteryCharge()
@@ -107,6 +146,7 @@ struct Turbine: Codable {
                 batteryCharge += 0.05
             }
         } else {
+            timeWithoutPower += 1
             switch flowControl {
             case .closed:
                 break
@@ -125,7 +165,7 @@ struct Turbine: Codable {
             batteryCharge = 0
         }
     }
-    
+        
     enum SetFlowStateError: Error {
         case insufficientBatteryCharge
     }
