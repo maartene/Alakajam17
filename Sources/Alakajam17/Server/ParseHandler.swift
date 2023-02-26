@@ -46,20 +46,11 @@ final class ParseHandler: ChannelInboundHandler {
            response  = await createUser(session: updatedSession, username: username, password: password)
         case .login(let username, let password):
             response = await login(session: updatedSession, username: username, password: password)
+        case.help:
+            response = await help(session: updatedSession)
             
         case .status:
             response = await status(session: updatedSession)
-//        case .look:
-//            response = await look(session: updatedSession)
-//        case .go(let direction):
-//            response = await go(session: updatedSession, direction: direction)
-//        case .say(let sentence):
-//            response = await sayMessage(session: updatedSession, sentence: sentence)
-//        case .whisper(let targetUserName, let message):
-//            response = await whisperMessage(to: targetUserName, message: message, session: updatedSession)
-//        case .open(let direction):
-//            response = await open(direction: direction, session: updatedSession)
-//
         case .setWaterflow(let intendedFlowControl):
             response = await setWaterflow(intendedFlowControlState: intendedFlowControl, session: updatedSession)
         case .setPoweroutput(let outsidePowerOpened):
@@ -68,8 +59,6 @@ final class ParseHandler: ChannelInboundHandler {
             response = await wait(session: updatedSession)
         case .reset:
             response = await reset(session: updatedSession)
-        case.help:
-            response = await help(session: updatedSession)
             
         case .illegal:
             response = [MudResponse(session: updatedSession, message: "This is not a well formed sentence.")]
