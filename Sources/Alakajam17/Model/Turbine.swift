@@ -137,6 +137,7 @@ struct Turbine: Codable {
     
     mutating private func updateBatteryCharge() {
         if outsidePowerOpened {
+            timeWithoutPower = 0
             switch flowControl {
             case .closed:
                 batteryCharge -= 0.1
