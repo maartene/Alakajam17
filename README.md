@@ -43,4 +43,4 @@ You can set the following environment variables:
 ### About the entry
 * Based on [NIOSwiftMUD](https://github.com/maartene/NIOSwiftMUD)
 * If you have feedback, please leave it at the [entry page](https://alakajam.com/17th-alakajam/1431/simsa-river-hydropower/)
-* Quick walkthrough here: 
+* Quick walkthrough [here](https://github.com/maartene/Alakajam17/blob/main/Walkthrough.md)
