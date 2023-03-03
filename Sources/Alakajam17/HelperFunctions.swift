@@ -205,6 +205,7 @@ func help(session: Session) -> [MudResponse] {
     <I>   'Closed' and 'Half' increase water pressure. 'Full' provides the most power.</I>
     <B>WAIT</B>: Advances the simulation time.
     <I>   You will need this because changes to the powerplant take some time.</I>
+    <B>STATUS</B>: Shows statistics/information about the power plant.
     
     <OK>We thank you for choosing <I>T-Tech</I> <OK>for all your power needs.</OK>
     ================================================================================
