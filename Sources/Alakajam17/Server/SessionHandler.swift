@@ -35,17 +35,60 @@ final class SessionHandler: ChannelInboundHandler {
         let str = String(buffer: bytes)
         
         var session = SessionStorage.first(where: { $0.channel.remoteAddress == context.channel.remoteAddress }) ?? Session(id: UUID(), channel: context.channel, playerID: nil)
-                
-        session.currentString += str
         
-        if str.contains("\n") || str.contains("\r") {
-            let command = TextCommand(session: session.erasingCurrentString(), command: session.currentString)
-            context.fireChannelRead(wrapInboundOut(command))
-        } else {
+        //print(str.debugDescription)
+        
+        switch str {
+        case "\u{7F}":  // backspace was pressed
+            session = processBackspace(session, context: context)
+        case "\n":      // an end-of-line character, time to send the command
+            sendCommand(session, context: context)
+        case "\r":      // an end-of-line character, time to send the command
+            sendCommand(session, context: context)
+        default:        // any other character, just append it to the sessions current string and echo back.
+            session.currentString += str
             context.writeAndFlush(self.wrapOutboundOut(inBuff), promise: nil)
         }
         
+//        if str == "\u{7F}" {
+//
+//
+//        } else {
+//            session.currentString += str
+//        }
+//
+//        if str.contains("\n") || str.contains("\r") {
+//            let command = TextCommand(session: session.erasingCurrentString(), command: session.currentString)
+//            context.fireChannelRead(wrapInboundOut(command))
+//        } else {
+//            context.writeAndFlush(self.wrapOutboundOut(inBuff), promise: nil)
+//        }
+        
         SessionStorage.replaceOrStoreSessionSync(session)
+    }
+    
+    private func sendCommand(_ session: Session, context: ChannelHandlerContext) {
+        let command = TextCommand(session: session.erasingCurrentString(), command: session.currentString)
+        context.fireChannelRead(wrapInboundOut(command))
+    }
+    
+    private func processBackspace(_ session: Session, context: ChannelHandlerContext) -> Session {
+        guard session.currentString.count > 0 else {
+            //print("Empty string, nothing to backspace.")
+            return session
+        }
+        
+        var updatedSession = session
+        
+        updatedSession.currentString = String(session.currentString.dropLast(1))
+        //print("Backspace: \(updatedSession.currentString)")
+        let backspaceString = "\u{1B}[1D \u{1B}[1D"
+        var outBuff = context.channel.allocator.buffer(capacity: backspaceString.count)
+        outBuff.writeString(backspaceString)
+        
+        let channelData = SSHChannelData(byteBuffer: outBuff)
+        context.writeAndFlush(self.wrapOutboundOut(channelData), promise: nil)
+        return updatedSession
     }
     
     public func channelActive(context: ChannelHandlerContext) {
