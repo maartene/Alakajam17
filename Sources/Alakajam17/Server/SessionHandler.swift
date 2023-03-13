@@ -41,13 +41,13 @@ final class SessionHandler: ChannelInboundHandler {
         switch str {
         case "\u{7F}":  // backspace was pressed
             session = processBackspace(session, context: context)
-        case "\n":      // an end-of-line character, time to send the command
-            sendCommand(session, context: context)
-        case "\r":      // an end-of-line character, time to send the command
+            SessionStorage.replaceOrStoreSessionSync(session)
+        case "\n", "\r":      // an end-of-line character, time to send the command
             sendCommand(session, context: context)
         default:        // any other character, just append it to the sessions current string and echo back.
             session.currentString += str
             context.writeAndFlush(self.wrapOutboundOut(inBuff), promise: nil)
+            SessionStorage.replaceOrStoreSessionSync(session)
         }
         
 //        if str == "\u{7F}" {
@@ -64,7 +64,7 @@ final class SessionHandler: ChannelInboundHandler {
 //            context.writeAndFlush(self.wrapOutboundOut(inBuff), promise: nil)
 //        }
         
-        SessionStorage.replaceOrStoreSessionSync(session)
+        
     }
     
     private func sendCommand(_ session: Session, context: ChannelHandlerContext) {

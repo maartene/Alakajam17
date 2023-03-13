@@ -47,7 +47,7 @@ final class ParseHandler: ChannelInboundHandler {
         case .login(let username, let password):
             response = await login(session: updatedSession, username: username, password: password)
         case.help:
-            response = await help(session: updatedSession)
+            response = help(session: updatedSession)
             
         case .status:
             response = await status(session: updatedSession)

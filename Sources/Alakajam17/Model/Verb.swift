@@ -24,6 +24,10 @@ enum Verb {
     
     var requiredLogin: Bool {
         switch self {
+        case .illegal:
+            return false
+        case .empty:
+            return false
         case .close:
             return false
         case .createUser:
